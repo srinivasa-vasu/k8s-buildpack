@@ -1,0 +1,18 @@
+apiVersion: build.knative.dev/v1alpha1
+kind: Build
+metadata:
+  name: buildpack-build
+spec:
+  serviceAccountName: build-bot
+    source:
+      git:
+        url: https://github.com/srinivasa-vasu/spring-music.git
+        revision: master
+    template:
+      name: buildpack
+      arguments:
+      - name: IMAGE
+        value: <username>/spring-java
+      env:
+      - name: PACK_APP_ZIP
+        value: spring-music-0.1.jar

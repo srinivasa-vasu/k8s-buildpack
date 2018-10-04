@@ -1,0 +1,49 @@
+# Copyright 2018 The Knative Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+apiVersion: serving.knative.dev/v1alpha1
+kind: Route
+metadata:
+  name: spring-java
+spec:
+  traffic:
+  - configurationName: spring-java
+    percent: 100
+---
+apiVersion: serving.knative.dev/v1alpha1
+kind: Configuration
+metadata:
+  name: spring-java
+spec:
+  build:
+    # Run this build as our build-bot
+    serviceAccountName: build-bot
+    source:
+      git:
+        url: https://github.com/srinivasa-vasu/spring-music.git
+        revision: master
+    template:
+      name: buildpack
+      arguments:
+      - name: IMAGE
+        value: <username>/spring-java
+      env:
+      - name: PACK_APP_ZIP
+        value: spring-music-0.1.jar
+  revisionTemplate:
+    metadata:
+      labels:
+        knative.dev/type: spring-music
+    spec:
+      container:
+        image: <username>/spring-java
